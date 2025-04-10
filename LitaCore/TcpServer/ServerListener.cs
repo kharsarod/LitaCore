@@ -14,6 +14,7 @@ using Configuration.ServerConf;
 using System.Security.Cryptography.X509Certificates;
 using NosCryptLib.Encryption;
 using LoginServer.Types;
+using System.Text.RegularExpressions;
 
 
 namespace LoginServer.TcpServer
@@ -38,7 +39,7 @@ namespace LoginServer.TcpServer
             _settings = await conf.ReadConfigAsync();
             _socket.Bind(new IPEndPoint(System.Net.IPAddress.Parse(IpAddress), Port));
             _socket.Listen(10);
-            Log.Information($"Server started on {IpAddress}:{Port}");
+            Log.Information($"Login Server started on {IpAddress}:{Port}");
 
             try
             {
@@ -63,6 +64,8 @@ namespace LoginServer.TcpServer
             {
                 mdr += "-99 0 ";
             }
+
+            Log.Information($"New client connected from {((IPEndPoint)client.RemoteEndPoint).Address}:{((IPEndPoint)client.RemoteEndPoint).Port}");
             
             try
             {
@@ -79,12 +82,12 @@ namespace LoginServer.TcpServer
                     // Obtener paquete
                     var data = _cryptography.Decrypt(buffer);
                     string[] splitter = data.Split(' ');
+                    var regex = Regex.Match(splitter[6], @"^\d+");
                     session.SessionId = int.Parse(splitter[1]);
                     session.Username = splitter[2];
                     session.Password = Cryptography.ToSha512(splitter[3]);
-                    session.Language = (LanguageType)byte.Parse(splitter[6]);
+                    session.Language = (LanguageType)byte.Parse(regex.Value);
 
-                    Log.Information(data);
 
                     string packet = $"{loginPacket.Packets[0]} {(byte)session.Language} {session.Username} {mdr} 0 {IPAddress.Any}:{_settings.Configuration.Port_CH1}:1:1.1.{_settings.Configuration.ServerName} -1:-1:-1:-1:-1:-1";
                     await session.SendPacket(packet);

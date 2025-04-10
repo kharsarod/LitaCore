@@ -10,9 +10,13 @@ namespace LitaCore
         private static protected ServerJsonConf conf = new ServerJsonConf();
         static async Task Main(string[] args)
         {
+            // Presentation
+            Console.Title = "LitaCore | LoginServer";
+
+            // Setting
             var settting = await conf.ReadConfigAsync();
             // Serilog Initialization
-            Log.Logger = new LoggerConfiguration().MinimumLevel.Information().WriteTo.Console().CreateLogger();
+            Log.Logger = new LoggerConfiguration().MinimumLevel.Information().WriteTo.Console(theme: Serilog.Sinks.SystemConsole.Themes.AnsiConsoleTheme.Literate).CreateLogger();
 
             ServerListener listener = new ServerListener(IPAddress.Any.ToString(), settting.Configuration.Port);
             await listener.Initialize();
