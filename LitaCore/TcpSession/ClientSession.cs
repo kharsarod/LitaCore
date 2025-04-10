@@ -1,4 +1,5 @@
 ﻿using Encryption;
+using LoginServer.Types;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,10 @@ namespace LoginServer.TcpSession
     {
         private Socket _client;
         private LoginCryptography encrypt = new LoginCryptography();
+        public int SessionId { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
+        public LanguageType Language { get; set; }
 
         public ClientSession(Socket client)
         {

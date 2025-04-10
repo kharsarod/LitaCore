@@ -11,6 +11,9 @@ using Microsoft.Extensions.DependencyInjection;
 using NosTalePacketsLib.Login;
 using LoginServer.TcpSession;
 using Configuration.ServerConf;
+using System.Security.Cryptography.X509Certificates;
+using NosCryptLib.Encryption;
+using LoginServer.Types;
 
 
 namespace LoginServer.TcpServer
@@ -72,12 +75,19 @@ namespace LoginServer.TcpServer
                     }
 
 
-                    string packet = $"{loginPacket.Packets[0]} 0 admin {mdr} 0 {IPAddress.Any}:{_settings.Configuration.Port_CH1}:1:1.1.{_settings.Configuration.ServerName} -1:-1:-1:-1:-1:-1";
 
                     // Obtener paquete
-                    var getPacket = _cryptography.Decrypt(Encoding.Default.GetBytes(Encoding.Default.GetString(buffer, 0, received)));
+                    var data = _cryptography.Decrypt(buffer);
+                    string[] splitter = data.Split(' ');
+                    session.SessionId = int.Parse(splitter[1]);
+                    session.Username = splitter[2];
+                    session.Password = Cryptography.ToSha512(splitter[3]);
+                    session.Language = (LanguageType)byte.Parse(splitter[6]);
 
-                    Log.Information(getPacket);
+                    Log.Information(data);
+
+                    string packet = $"{loginPacket.Packets[0]} {(byte)session.Language} {session.Username} {mdr} 0 {IPAddress.Any}:{_settings.Configuration.Port_CH1}:1:1.1.{_settings.Configuration.ServerName} -1:-1:-1:-1:-1:-1";
+                    await session.SendPacket(packet);
                     
                 }
             }
