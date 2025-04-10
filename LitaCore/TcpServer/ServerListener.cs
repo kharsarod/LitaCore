@@ -74,6 +74,8 @@ namespace LoginServer.TcpServer
                     string packet = $"{loginPacket.Packets[0]} 0 admin {mdr} 0 {IPAddress.Any}:{_settings.Configuration.Port_CH1}:1:1.1.{_settings.Configuration.ServerName} -1:-1:-1:-1:-1:-1";
 
                     await session.SendPacket(packet);
+
+                    Console.WriteLine("test");
                     
                 }
             }
