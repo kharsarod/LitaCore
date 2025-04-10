@@ -23,6 +23,7 @@ namespace LoginServer.TcpServer
         private LoginPacket loginPacket = new LoginPacket();
         ServerJsonConf conf = new ServerJsonConf();
         private AppSettings _settings = new AppSettings();
+        private LoginCryptography _cryptography = new LoginCryptography();
         public ServerListener(string IpAddress, int Port)
         {
             this.IpAddress = IpAddress;
@@ -73,9 +74,10 @@ namespace LoginServer.TcpServer
 
                     string packet = $"{loginPacket.Packets[0]} 0 admin {mdr} 0 {IPAddress.Any}:{_settings.Configuration.Port_CH1}:1:1.1.{_settings.Configuration.ServerName} -1:-1:-1:-1:-1:-1";
 
-                    await session.SendPacket(packet);
+                    // Obtener paquete
+                    var getPacket = _cryptography.Decrypt(Encoding.Default.GetBytes(Encoding.Default.GetString(buffer, 0, received)));
 
-                    Console.WriteLine("test");
+                    Log.Information(getPacket);
                     
                 }
             }
