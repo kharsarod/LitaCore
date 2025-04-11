@@ -15,6 +15,7 @@ using System.Security.Cryptography.X509Certificates;
 using NosCryptLib.Encryption;
 using LoginServer.Types;
 using System.Text.RegularExpressions;
+using Database.Data.Repositories;
 
 
 namespace LoginServer.TcpServer
@@ -28,10 +29,15 @@ namespace LoginServer.TcpServer
         ServerJsonConf conf = new ServerJsonConf();
         private AppSettings _settings = new AppSettings();
         private LoginCryptography _cryptography = new LoginCryptography();
-        public ServerListener(string IpAddress, int Port)
+        private readonly AccountRepository accountRepository;
+        private readonly AppDbContext dbContext;
+
+        public ServerListener(string IpAddress, int Port, AppDbContext dbContext)
         {
             this.IpAddress = IpAddress;
             this.Port = Port;
+            this.dbContext = dbContext;
+            this.accountRepository = new AccountRepository(dbContext);
         }
 
         public async Task Initialize()
@@ -74,23 +80,40 @@ namespace LoginServer.TcpServer
                     int received = await client.ReceiveAsync(new ArraySegment<byte>(buffer), SocketFlags.None);
                     if (received == 0)
                     {
-                        break; // Client disconnected.
+                        break;
                     }
 
 
-
-                    // Obtener paquete
                     var data = _cryptography.Decrypt(buffer);
                     string[] splitter = data.Split(' ');
+
+                    var account = await accountRepository.LoadByName(splitter[2]);
+
                     var regex = Regex.Match(splitter[6], @"^\d+");
                     session.SessionId = int.Parse(splitter[1]);
-                    session.Username = splitter[2];
-                    session.Password = Cryptography.ToSha512(splitter[3]);
                     session.Language = (LanguageType)byte.Parse(regex.Value);
 
-
-                    string packet = $"{loginPacket.Packets[0]} {(byte)session.Language} {session.Username} {mdr} 0 {IPAddress.Any}:{_settings.Configuration.Port_CH1}:1:1.1.{_settings.Configuration.ServerName} -1:-1:-1:-1:-1:-1";
-                    await session.SendPacket(packet);
+                    if (account != null)
+                    {
+                        if (account.IsBanned)
+                        {
+                            await session.SendPacket("failc 7");
+                        }
+                        if (splitter[3] == account.Password.ToUpper())
+                        {
+                            string packet = $"{loginPacket.Packets[0]} {(byte)session.Language} {account.Username} {mdr} 0 {IPAddress.Any}:{_settings.Configuration.Port_CH1}:1:1.1.{_settings.Configuration.ServerName} -1:-1:-1:-1:-1:-1";
+                            await session.SendPacket(packet);
+                        }
+                        else
+                        {
+                            await session.SendPacket("failc 5");
+                        }
+                    }
+                    else
+                    {
+                        await session.SendPacket("failc 5");
+                        return;
+                    }
                     
                 }
             }

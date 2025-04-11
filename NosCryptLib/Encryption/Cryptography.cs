@@ -28,6 +28,7 @@ namespace NosCryptLib.Encryption
         private static string Hash(string value, HashAlgorithm hash)
         {
             var bytes = hash.ComputeHash(Encoding.ASCII.GetBytes(value));
+
             var sb = new StringBuilder();
 
             foreach (byte b in bytes)

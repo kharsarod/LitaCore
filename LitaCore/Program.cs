@@ -18,7 +18,10 @@ namespace LitaCore
             // Serilog Initialization
             Log.Logger = new LoggerConfiguration().MinimumLevel.Information().WriteTo.Console(theme: Serilog.Sinks.SystemConsole.Themes.AnsiConsoleTheme.Literate).CreateLogger();
 
-            ServerListener listener = new ServerListener(IPAddress.Any.ToString(), settting.Configuration.Port);
+            Database.Main main = new Database.Main();
+            await main.Initialize();
+
+            ServerListener listener = new ServerListener(IPAddress.Any.ToString(), settting.Configuration.Port, new AppDbContext());
             await listener.Initialize();
         }
     }
