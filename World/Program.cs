@@ -1,10 +1,15 @@
-﻿namespace World
+﻿using Serilog;
+using World.Network;
+
+namespace World
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            Console.WriteLine("Hello, World!");
+            Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateLogger();
+            NetworkManager networkManager = new NetworkManager(new AppDbContext());
+            await networkManager.StartAsync();
         }
     }
 }

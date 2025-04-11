@@ -1,26 +1,9 @@
-﻿/*
- * This file is part of the OpenNos Emulator Project. See AUTHORS file for Copyright information
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
+﻿using System.Text;
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace OpenNos.Core
+namespace NosCryptLib.Encryption
 {
     public class WorldCryptography
     {
-
         #region Methods
 
         public static string Decrypt2(string str)
@@ -158,10 +141,84 @@ namespace OpenNos.Core
                 }
             }
 
-            return decrypted.ToString();
+            return decrypted.ToString().Trim('\0');
         }
 
-        public  string DecryptCustomParameter(byte[] data)
+        public string DecryptUnauthed(in ReadOnlySpan<byte> str)
+        {
+            try
+            {
+                var encryptedStringBuilder = new StringBuilder();
+                for (int i = 1; i < str.Length; i++)
+                {
+                    if (Convert.ToChar(str[i]) == 0xE)
+                    {
+                        return encryptedStringBuilder.ToString();
+                    }
+
+                    int firstbyte = Convert.ToInt32(str[i] - 0xF);
+                    int secondbyte = firstbyte;
+                    secondbyte &= 240;
+                    firstbyte = Convert.ToInt32(firstbyte - secondbyte);
+                    secondbyte >>= 4;
+
+                    switch (secondbyte)
+                    {
+                        case 0:
+                        case 1:
+                            encryptedStringBuilder.Append(' ');
+                            break;
+
+                        case 2:
+                            encryptedStringBuilder.Append('-');
+                            break;
+
+                        case 3:
+                            encryptedStringBuilder.Append('.');
+                            break;
+
+                        default:
+                            secondbyte += 0x2C;
+                            encryptedStringBuilder.Append(Convert.ToChar(secondbyte));
+                            break;
+                    }
+
+                    switch (firstbyte)
+                    {
+                        case 0:
+                            encryptedStringBuilder.Append(' ');
+                            break;
+
+                        case 1:
+                            encryptedStringBuilder.Append(' ');
+                            break;
+
+                        case 2:
+                            encryptedStringBuilder.Append('-');
+                            break;
+
+                        case 3:
+                            encryptedStringBuilder.Append('.');
+                            break;
+
+                        default:
+                            firstbyte += 0x2C;
+                            encryptedStringBuilder.Append(Convert.ToChar(firstbyte));
+                            break;
+                    }
+                }
+
+                return encryptedStringBuilder.ToString();
+            }
+            catch (OverflowException)
+            {
+                return string.Empty;
+            }
+        }
+
+
+
+        public string DecryptCustomParameter(byte[] data)
         {
             try
             {

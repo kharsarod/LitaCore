@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Net.Sockets;
 using System.Net;
 using Serilog;
-using Encryption;
+using NosCryptLib.Encryption;
 using Microsoft.Extensions.DependencyInjection;
 using NosTalePacketsLib.Login;
 using LoginServer.TcpSession;
@@ -30,13 +30,11 @@ namespace LoginServer.TcpServer
         private AppSettings _settings = new AppSettings();
         private LoginCryptography _cryptography = new LoginCryptography();
         private readonly AccountRepository accountRepository;
-        private readonly AppDbContext dbContext;
 
         public ServerListener(string IpAddress, int Port, AppDbContext dbContext)
         {
             this.IpAddress = IpAddress;
             this.Port = Port;
-            this.dbContext = dbContext;
             this.accountRepository = new AccountRepository(dbContext);
         }
 
@@ -101,7 +99,7 @@ namespace LoginServer.TcpServer
                         }
                         if (splitter[3] == account.Password.ToUpper())
                         {
-                            string packet = $"{loginPacket.Packets[0]} {(byte)session.Language} {account.Username} {mdr} 0 {IPAddress.Any}:{_settings.Configuration.Port_CH1}:1:1.1.{_settings.Configuration.ServerName} -1:-1:-1:-1:-1:-1";
+                            string packet = $"{loginPacket.Packets[0]} {(byte)session.Language} {account.Username} {mdr} 0 127.0.0.1:{_settings.Configuration.Port_CH1}:1:1.1.{_settings.Configuration.ServerName} -1:-1:-1:-1:-1:-1";
                             await session.SendPacket(packet);
                         }
                         else

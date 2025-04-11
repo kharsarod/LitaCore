@@ -7,4 +7,11 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Configuration\Configuration.csproj" />
+    <ProjectReference Include="..\Database\Database.csproj" />
+    <ProjectReference Include="..\NosCryptLib\NosCryptLib.csproj" />
+    <ProjectReference Include="..\NosTalePacketsLib\NosTalePacketsLib.csproj" />
+  </ItemGroup>
+
 </Project>

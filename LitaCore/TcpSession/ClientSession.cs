@@ -1,5 +1,5 @@
-﻿using Encryption;
-using LoginServer.Types;
+﻿using LoginServer.Types;
+using NosCryptLib.Encryption;
 using System;
 using System.Collections.Generic;
 using System.Linq;
