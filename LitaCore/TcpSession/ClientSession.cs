@@ -17,6 +17,7 @@ namespace LoginServer.TcpSession
         public string Username { get; set; }
         public string Password { get; set; }
         public LanguageType Language { get; set; }
+        public bool IsConnected { get; set; }
 
         public ClientSession(Socket client)
         {
@@ -26,6 +27,12 @@ namespace LoginServer.TcpSession
         public async Task SendPacket(string data)
         {
             await _client.SendAsync(encrypt.Encrypt(data), SocketFlags.None);
+        }
+
+        public void Dispose()
+        {
+            IsConnected = false;
+            _client.Close();
         }
     }
 }

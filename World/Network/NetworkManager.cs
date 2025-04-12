@@ -33,6 +33,7 @@ namespace World.Network
             _packetHandler.Register("game_start", GameStartHandler.HandleGameStart);
             _packetHandler.Register("walk", WalkHandler.HandleWalk);
             _packetHandler.Register("Char_DEL", CharacterHandler.HandleCharacterDelete);
+            _packetHandler.Register("Char_NEW_JOB", CharacterHandler.HandleCharacterCreationJob);
 
             // commands
             _packetHandler.Register("$morph", CommandHandler.Morph);
@@ -54,9 +55,9 @@ namespace World.Network
 
         private async Task HandleClient(Socket client)
         {
+            var session = new ClientSession(client, _packetHandler);
             try
             {
-                var session = new ClientSession(client, _packetHandler);
                 while (true)
                 {
                     var buffer = new byte[1024];
@@ -94,8 +95,15 @@ namespace World.Network
                         if (data.Contains("ORG"))
                         {
                             await session.SendPacket("clist_start 0");
+                            if (SessionManager.IsConnected(pck.Split(' ')[1]))
+                            {
+                                await session.SendPacket("msg 0 This account already logged in. What are you trying to do?");
+                                await client.DisconnectAsync(false);
+                                return;
+                            }
                             await session.SetupAcccount(pck.Split(' ')[1]);
                             await session.SendPacket("clist_end");
+
 
                             var p = pck.Split(' ');
                             pck = $"{p[0]} ORG";
@@ -125,6 +133,11 @@ namespace World.Network
             catch (Exception e)
             {
                 Log.Error(e.Message);
+            }
+            finally
+            {
+                Log.Information($"Client disconnected.");
+                await session.Disconnect();
             }
         }
     }

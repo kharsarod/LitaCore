@@ -62,6 +62,7 @@ namespace LoginServer.TcpServer
         private async Task HandleClient(Socket client)
         {
             ClientSession session = new ClientSession(client);
+            
             var buffer = new byte[8192];
             string mdr = string.Empty;
             for (int i = 0; i != 60; i++)
@@ -90,7 +91,7 @@ namespace LoginServer.TcpServer
                     var regex = Regex.Match(splitter[6], @"^\d+");
                     session.SessionId = int.Parse(splitter[1]);
                     session.Language = (LanguageType)byte.Parse(regex.Value);
-
+                    session.Username = splitter[2];
                     if (account != null)
                     {
                         if (account.IsBanned)
@@ -101,6 +102,7 @@ namespace LoginServer.TcpServer
                         {
                             string packet = $"{loginPacket.Header} {(byte)session.Language} {account.Username} {mdr} 0 127.0.0.1:{_settings.Configuration.Port_CH1}:1:1.1.{_settings.Configuration.ServerName} -1:-1:-1:-1:-1:-1";
                             await session.SendPacket(packet);
+                            session.IsConnected = true;
                         }
                         else
                         {
@@ -112,7 +114,6 @@ namespace LoginServer.TcpServer
                         await session.SendPacket("failc 5");
                         return;
                     }
-                    
                 }
             }
             catch (Exception e)

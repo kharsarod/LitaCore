@@ -9,6 +9,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using World.Entities;
 
 namespace World.Network
 {
@@ -17,7 +18,10 @@ namespace World.Network
         private Socket _socket;
         private readonly WorldCryptography _cryptography = new WorldCryptography();
         public Account Account { get; set; }
+        private Character Character { get; set; }
+        public Player Player { get; set; }
         private PacketHandler _packetHandler;
+        public bool IsAlreadyConnected { get; set; }
         
         public int SessionId { get; set; }
 
@@ -34,6 +38,25 @@ namespace World.Network
                 Account = await context.Accounts.FirstOrDefaultAsync(x => x.Username == name);
                 Log.Information($"Account: {Account.Username} is connected!");
             }
+
+            if (SessionManager.IsConnected(Account.Username))
+            {
+                IsAlreadyConnected = true;
+            }
+            else
+            {
+                IsAlreadyConnected = false;
+                SessionManager.Register(Account.Username, this);
+            }
+        }
+
+        public async Task Disconnect()
+        {
+            if ( Account != null && !string.IsNullOrEmpty(Account.Username))
+            {
+                SessionManager.Unregister(Account.Username);
+            }
+            _socket.Close();
         }
 
         public async Task SendPacket(string packet)
