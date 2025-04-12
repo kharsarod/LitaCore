@@ -19,10 +19,12 @@ namespace World.Network.Handlers
             await session.SendPacket("mapout");
             await session.SendPacket("rsfi 1 1 0 9 0 9");
             await session.SendPacket(session.Player.GeneratePInfo());
+            await session.SendPacket(session.Player.GenerateLev());
             await session.SendPacket("c_close 1");
             await session.SendPacket("c_mode 1 1 0 0 0 0 10 0");
             await session.SendPacket($"at 1 {session.Player.MapId} {session.Player.MapPosX} {session.Player.MapPosY} 0 0 12 2 -1");
             await session.SendPacket(session.Player.GenerateScale());
+            await session.SendPacket(session.Player.GenerateStat());
         }
     }
 }

@@ -66,5 +66,7 @@ namespace Database.Player
         public bool IsDisplayCdBlocked { get; set; }
         public bool IsBlockedHud { get; set; }
         public bool IsBlockedHat { get; set; }
+        public bool IsPetAutoRelive { get; set; }
+        public bool IsPartnerAutoRelive { get; set; }
     }
 }

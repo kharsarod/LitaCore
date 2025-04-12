@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Enum.Main.ChatEnum;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,22 @@ namespace World.Network.Handlers
             string content = string.Join(' ', parts.Skip(2));
             await session.SendPacket($"c_mode 1 1 {content}");
             await session.SendPacket("eff 1 1 196");
+        }
+
+        public static async Task Teleport(ClientSession session, string[] parts)
+        {
+            session.Player.MapId = short.Parse(parts[2]);
+            session.Player.MapPosX = short.Parse(parts[3]);
+            session.Player.MapPosY = short.Parse(parts[4]);
+
+            await session.SendPacket($"at 1 {session.Player.MapId} {session.Player.MapPosX} {session.Player.MapPosY} 0 0 1 2 -1");
+        }
+
+        public static async Task Speed(ClientSession session, string[] parts)
+        {
+            await session.Player.SetSpeed(byte.Parse(parts[2]));
+
+            await session.Player.ChatSay("Has cambiado tu velocidad de movimiento.", ChatColor.Green);
         }
     }
 }

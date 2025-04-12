@@ -37,6 +37,8 @@ namespace World.Network
 
             // commands
             _packetHandler.Register("$morph", CommandHandler.Morph);
+            _packetHandler.Register("$tp", CommandHandler.Teleport);
+            _packetHandler.Register("$speed", CommandHandler.Speed);
         }
 
         public async Task StartAsync()

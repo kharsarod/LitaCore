@@ -31,6 +31,10 @@ namespace World.Network.Handlers
                 MapId = 1,
                 MapPosX = 79,
                 MapPosY = 116,
+                MaxHealth = 221,
+                Health = 221,
+                MaxMana = 350,
+                Mana = 350,
                 Dignity = 0, // cargar cuenta con el loadByName, ya que al entrar sale el NOS y sale el nombre de la cuenta, sino es el NOS es el NsTeST.
                 Slot = byte.Parse(parts[3]),
                 Gender = (Gender)byte.Parse(parts[4]),
@@ -71,6 +75,10 @@ namespace World.Network.Handlers
                 MapId = 1,
                 MapPosX = 79,
                 MapPosY = 116,
+                MaxHealth = 5000,
+                Health = 5000,
+                MaxMana = 7000,
+                Mana = 7000,
                 Dignity = 0, // cargar cuenta con el loadByName, ya que al entrar sale el NOS y sale el nombre de la cuenta, sino es el NOS es el NsTeST.
                 Slot = byte.Parse(parts[3]),
                 Gender = (Gender)byte.Parse(parts[4]),
