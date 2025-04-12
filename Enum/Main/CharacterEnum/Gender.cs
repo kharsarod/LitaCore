@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NosTalePacketsLib.Login
+namespace Enum.Main.CharacterEnum
 {
-    public class LoginPacket
+    public enum Gender : byte
     {
-        public string[] Packets = ["NsTeST"];
+        Male,
+        Female
     }
 }

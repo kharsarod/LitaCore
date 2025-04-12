@@ -30,6 +30,18 @@ namespace Database.Data.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task Insert(Account account)
+        {
+            _context.Accounts.Add(account);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task Update(Account account)
+        {
+            _context.Accounts.Update(account);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task DeleteByName(string name)
         {
             var account = await LoadByName(name);

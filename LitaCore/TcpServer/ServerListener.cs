@@ -8,7 +8,6 @@ using System.Net;
 using Serilog;
 using NosCryptLib.Encryption;
 using Microsoft.Extensions.DependencyInjection;
-using NosTalePacketsLib.Login;
 using LoginServer.TcpSession;
 using Configuration.ServerConf;
 using System.Security.Cryptography.X509Certificates;
@@ -16,6 +15,7 @@ using NosCryptLib.Encryption;
 using LoginServer.Types;
 using System.Text.RegularExpressions;
 using Database.Data.Repositories;
+using NosTalePacketsLib.Packets.Client;
 
 
 namespace LoginServer.TcpServer
@@ -99,7 +99,7 @@ namespace LoginServer.TcpServer
                         }
                         if (splitter[3] == account.Password.ToUpper())
                         {
-                            string packet = $"{loginPacket.Packets[0]} {(byte)session.Language} {account.Username} {mdr} 0 127.0.0.1:{_settings.Configuration.Port_CH1}:1:1.1.{_settings.Configuration.ServerName} -1:-1:-1:-1:-1:-1";
+                            string packet = $"{loginPacket.Header} {(byte)session.Language} {account.Username} {mdr} 0 127.0.0.1:{_settings.Configuration.Port_CH1}:1:1.1.{_settings.Configuration.ServerName} -1:-1:-1:-1:-1:-1";
                             await session.SendPacket(packet);
                         }
                         else

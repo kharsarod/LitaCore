@@ -5,6 +5,7 @@ using Serilog;
 public class AppDbContext : DbContext
 {
     public DbSet<Account> Accounts { get; set; }
+    public DbSet<Character> Characters { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -25,5 +26,100 @@ public class AppDbContext : DbContext
         }
 
         modelBuilder.Entity<Account>().ToTable("accounts");
+        modelBuilder.Entity<Character>().ToTable("characters");
+    }
+
+    public static async Task InsertAsync<TEntity>(TEntity entity) where TEntity : class
+    {
+        try
+        {
+            using (var context = new AppDbContext())
+            {
+                await context.Set<TEntity>().AddAsync(entity);
+                await context.SaveChangesAsync();
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Error(e.Message);
+        }
+    }
+
+    public static async Task LoadByNameAsync<TEntity>(string name) where TEntity : class
+    {
+        try
+        {
+            using (var context = new AppDbContext())
+            {
+                await context.Set<TEntity>().FindAsync(name);
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Error(e.Message);
+        }
+    }
+
+    public static async Task LoadByAccountIdAsync<TEntity>(int accountId) where TEntity : class
+    {
+        try
+        {
+            using (var context = new AppDbContext())
+            {
+                await context.Set<TEntity>().FindAsync(accountId);
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Error(e.Message);
+        }
+    }
+
+    public static async Task<List<Character>> LoadCharactersByAccountId(int accountId)
+    {
+        try
+        {
+            using (var context = new AppDbContext())
+            {
+                return await context.Characters.Where(c => c.AccountId == accountId).ToListAsync();
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Error(e.Message);
+            return new List<Character>();
+        }
+    }
+
+    public static async Task<Character> LoadCharacterBySlot(byte slot)
+    {
+        try
+        {
+            using (var context = new AppDbContext())
+            {
+                return await context.Characters.FirstOrDefaultAsync(c => c.Slot == slot);
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Error(e.Message);
+            return null;
+        }
+    }
+
+    public static async Task DeleteCharacterAsync(Character character)
+    {
+        try
+        {
+            using (var context = new AppDbContext())
+            {
+                context.Characters.Remove(character);
+                await context.SaveChangesAsync();
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Error(e.Message);
+        }
     }
 }

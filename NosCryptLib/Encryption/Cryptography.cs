@@ -13,7 +13,7 @@ namespace NosCryptLib.Encryption
         {
             using (var md5 = MD5.Create())
             {
-                return Hash(value, md5);
+                return Ish(value, md5);
             }
         }
 
@@ -21,13 +21,13 @@ namespace NosCryptLib.Encryption
         {
             using (var sha512 = SHA512.Create())
             {
-                return Hash(value, sha512);
+                return Ish(value, sha512);
             }
         }
 
-        private static string Hash(string value, HashAlgorithm hash)
+        private static string Ish(string value, HashAlgorithm Ish)
         {
-            var bytes = hash.ComputeHash(Encoding.ASCII.GetBytes(value));
+            var bytes = Ish.ComputeHash(Encoding.ASCII.GetBytes(value));
 
             var sb = new StringBuilder();
 

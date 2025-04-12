@@ -27,8 +27,12 @@ namespace World.Network
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
             _packetHandler.Register("Char_NEW", CharacterHandler.HandleCharacterCreation);
+            _packetHandler.Register("ORG", CharacterHandler.HandleCharacterLoad);
             _packetHandler.Register("select", CharacterHandler.HandleSelect);
-            _packetHandler.Register("guri", CharacterHandler.HandleGuri);
+            _packetHandler.Register("guri", GuriHandler.HandleGuri);
+            _packetHandler.Register("game_start", GameStartHandler.HandleGameStart);
+            _packetHandler.Register("walk", WalkHandler.HandleWalk);
+            _packetHandler.Register("Char_DEL", CharacterHandler.HandleCharacterDelete);
 
             // commands
             _packetHandler.Register("$morph", CommandHandler.Morph);
@@ -50,10 +54,9 @@ namespace World.Network
 
         private async Task HandleClient(Socket client)
         {
-            Log.Information("Client connected");
             try
             {
-                var session = new ClientSession(client);
+                var session = new ClientSession(client, _packetHandler);
                 while (true)
                 {
                     var buffer = new byte[1024];
@@ -74,11 +77,12 @@ namespace World.Network
                     }
 
                     string test = _cryptography.DecryptUnauthed(raw);
-
+                    
                     var gamePacket = pck.Split(' ');
 
                     if (gamePacket.Length > 1)
                     {
+                        pck = Regex.Replace(pck, @"game_start\d+", "game_start");
                         Log.Information($"Packet from game: {pck}");
 
                         if (pck.Split(' ')[1].StartsWith("$music"))
@@ -90,8 +94,14 @@ namespace World.Network
                         if (data.Contains("ORG"))
                         {
                             await session.SendPacket("clist_start 0");
+                            await session.SetupAcccount(pck.Split(' ')[1]);
                             await session.SendPacket("clist_end");
+
+                            var p = pck.Split(' ');
+                            pck = $"{p[0]} ORG";
                         }
+
+
 
                         if (pck.Split(' ')[1].StartsWith("$packet"))
                         {
@@ -99,7 +109,15 @@ namespace World.Network
                             await session.SendPacket($"{args}");
                         }
 
-                        await _packetHandler.Handle(session, pck);
+                        try
+                        {
+                            await _packetHandler.Handle(session, pck);
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Error(e.Message);
+                        }
+                        
                     }
                     
                 }

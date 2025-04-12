@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,8 @@ namespace Database
             try
             {
                 using var context = new AppDbContext();
-                await context.Database.EnsureCreatedAsync();
+               // await context.Database.EnsureCreatedAsync();
+               // await context.Database.MigrateAsync();
                 Log.Information("Database initialized.");
             }
             catch (Exception e)

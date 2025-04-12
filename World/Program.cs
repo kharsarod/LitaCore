@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using Database.Commands;
+using Serilog;
 using World.Network;
 
 namespace World
@@ -7,9 +8,32 @@ namespace World
     {
         static async Task Main(string[] args)
         {
-            Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateLogger();
+            Log.Logger = new LoggerConfiguration().WriteTo.Console(theme: Serilog.Sinks.SystemConsole.Themes.AnsiConsoleTheme.Code).CreateLogger();
             NetworkManager networkManager = new NetworkManager(new AppDbContext());
-            await networkManager.StartAsync();
+
+            _ = Task.Run(() => networkManager.StartAsync());
+
+            while (true)
+            {
+                string input = Console.ReadLine();
+                Log.Information(input);
+
+                if (input.StartsWith("!acc_create"))
+                {
+                    string[] parts = input.Split(' ', 2);
+
+                    if (parts.Length > 1)
+                    {
+                        await AccountCreate.CreateAccount(input.Split(' ')[1], input.Split(' ')[2], byte.Parse(input.Split(' ')[3]));
+                    }
+                    
+                }
+
+                if (input == "exit")
+                {
+                    break;
+                }
+            }
         }
     }
 }
