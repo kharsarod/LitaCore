@@ -45,6 +45,22 @@ public class AppDbContext : DbContext
         }
     }
 
+    public static async Task UpdateAsync<TEntity>(TEntity entity) where TEntity : class
+    {
+        try
+        {
+            using (var context = new AppDbContext())
+            {
+                context.Set<TEntity>().Update(entity);
+                await context.SaveChangesAsync();
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Error(e.Message);
+        }
+    }
+
     public static async Task LoadByNameAsync<TEntity>(string name) where TEntity : class
     {
         try

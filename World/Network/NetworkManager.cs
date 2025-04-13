@@ -34,9 +34,10 @@ namespace World.Network
             _packetHandler.Register("walk", WalkHandler.HandleWalk);
             _packetHandler.Register("Char_DEL", CharacterHandler.HandleCharacterDelete);
             _packetHandler.Register("Char_NEW_JOB", CharacterHandler.HandleCharacterCreationJob);
+            _packetHandler.Register("rest", RestHandler.HandleRest);
 
             // commands
-            _packetHandler.Register("$morph", CommandHandler.Morph);
+            _packetHandler.Register("$transform", CommandHandler.Morph);
             _packetHandler.Register("$tp", CommandHandler.Teleport);
             _packetHandler.Register("$speed", CommandHandler.Speed);
         }

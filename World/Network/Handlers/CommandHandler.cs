@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using World.Services;
 
 namespace World.Network.Handlers
 {
@@ -18,11 +19,12 @@ namespace World.Network.Handlers
 
         public static async Task Teleport(ClientSession session, string[] parts)
         {
-            session.Player.MapId = short.Parse(parts[2]);
-            session.Player.MapPosX = short.Parse(parts[3]);
-            session.Player.MapPosY = short.Parse(parts[4]);
+            session.Player.Character.MapId = short.Parse(parts[2]);
+            session.Player.Character.MapPosX = short.Parse(parts[3]);
+            session.Player.Character.MapPosY = short.Parse(parts[4]);
 
-            await session.SendPacket($"at 1 {session.Player.MapId} {session.Player.MapPosX} {session.Player.MapPosY} 0 0 1 2 -1");
+            await session.SendPacket($"at 1 {session.Player.Character.MapId} {session.Player.Character.MapPosX} {session.Player.Character.MapPosY} 0 0 1 2 -1");
+            await AppDbContext.UpdateAsync(session.Player.Character);
         }
 
         public static async Task Speed(ClientSession session, string[] parts)

@@ -16,12 +16,15 @@ namespace World.Network
     public class ClientSession
     {
         private Socket _socket;
+        private static int _idCounter = 0;
         private readonly WorldCryptography _cryptography = new WorldCryptography();
         public Account Account { get; set; }
         private Character Character { get; set; }
         public Player Player { get; set; }
         private PacketHandler _packetHandler;
         public bool IsAlreadyConnected { get; set; }
+
+        public int ClientId { get; private set; }
         
         public int SessionId { get; set; }
 
@@ -29,6 +32,7 @@ namespace World.Network
         {
             _socket = socket;
             _packetHandler = handler;
+            ClientId = Interlocked.Increment(ref _idCounter);
         }
 
         public async Task SetupAcccount(string name)
@@ -36,7 +40,7 @@ namespace World.Network
             using (var context = new AppDbContext())
             {
                 Account = await context.Accounts.FirstOrDefaultAsync(x => x.Username == name);
-                Log.Information($"Account: {Account.Username} is connected!");
+                Log.Information($"Account: {Account.Username} with clientId: {ClientId} is connected!");
             }
 
             if (SessionManager.IsConnected(Account.Username))

@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using System;
@@ -18,6 +20,7 @@ namespace Database
                 using var context = new AppDbContext();
                // await context.Database.EnsureCreatedAsync();
                // await context.Database.MigrateAsync();
+
                 Log.Information("Database initialized.");
             }
             catch (Exception e)

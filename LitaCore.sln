@@ -22,6 +22,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Etc", "Etc", "{92802C41-F9B
 		Etc.txt = Etc.txt
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameDataImporter", "GameDataImporter\GameDataImporter.csproj", "{3654CCC3-0482-4402-BC33-0ADB39176052}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -56,6 +58,10 @@ Global
 		{418DEB05-2002-433B-9F53-61C047DF1D6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{418DEB05-2002-433B-9F53-61C047DF1D6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{418DEB05-2002-433B-9F53-61C047DF1D6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3654CCC3-0482-4402-BC33-0ADB39176052}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3654CCC3-0482-4402-BC33-0ADB39176052}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3654CCC3-0482-4402-BC33-0ADB39176052}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3654CCC3-0482-4402-BC33-0ADB39176052}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
