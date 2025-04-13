@@ -23,7 +23,8 @@ namespace World.Network.Handlers
             await session.SendPacket(session.Player.Packets.GenerateLev());
             await session.SendPacket("c_close 1");
             await session.SendPacket("c_mode 1 1 0 0 0 0 10 0");
-            await session.SendPacket($"at 1 {session.Player.MapId} {session.Player.MapPosX} {session.Player.MapPosY} 0 0 12 2 -1");
+            await session.SendPacket(session.Player.Packets.GeneratePlayerMapInfo());
+            await session.SendPacket(session.Player.Packets.GenerateMapInfo());
             await session.SendPacket(session.Player.Packets.GenerateScale());
             await session.SendPacket(session.Player.Packets.GenerateStat());
             await session.SendPacket(session.Player.Packets.GenerateFood());

@@ -1,5 +1,6 @@
 ﻿using Database.Player;
 using Enum.Main.CharacterEnum;
+using GameWorld;
 using NosCryptLib.Encryption;
 using NosTalePacketsLib.Packets.Client;
 using NosTalePacketsLib.Packets.Parser;
@@ -10,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using World.Entities;
+using World.GameWorld;
 
 namespace World.Network.Handlers
 {
@@ -151,6 +153,8 @@ namespace World.Network.Handlers
             {
                 var character = await AppDbContext.LoadCharacterBySlot(byte.Parse(parts[2]));
                 session.Player = new Player(session, character);
+                var map = WorldManager.GetWorldMap(character.MapId);
+                session.Player.CurrentMap = map;
                 await session.SendPacket("OK");
             }
             catch (Exception e)

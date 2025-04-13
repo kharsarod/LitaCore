@@ -1,4 +1,5 @@
 ﻿using Database.Commands;
+using GameWorld;
 using Serilog;
 using World.Network;
 
@@ -9,6 +10,7 @@ namespace World
         static async Task Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration().WriteTo.Console(theme: Serilog.Sinks.SystemConsole.Themes.AnsiConsoleTheme.Code).CreateLogger();
+            await WorldManager.LoadMaps();
             NetworkManager networkManager = new NetworkManager(new AppDbContext());
 
             _ = Task.Run(() => networkManager.StartAsync());

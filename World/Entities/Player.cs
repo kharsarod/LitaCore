@@ -1,14 +1,20 @@
 ﻿using AutoMapper;
 using Database.Player;
+using Database.World;
 using Enum.Main.ChatEnum;
+using Enum.Main.EffectEnum;
 using Enum.Main.EntityEnum;
 using Enum.Main.OptionEnum;
+using GameWorld;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using World.Extensions;
+using World.GameWorld;
 using World.Network;
 
 namespace World.Entities
@@ -25,6 +31,8 @@ namespace World.Entities
         public PlayerPackets Packets => new PlayerPackets(Session);
         public Character Character { get; set; }
         public bool IsSitting { get; set; }
+        public WorldMap CurrentMap { get; set; }
+        private IDisposable _timerSave;
 
         public Player(ClientSession session, Character character)
         {
@@ -117,9 +125,87 @@ namespace World.Entities
             await Session.SendPacket($"say 1 1 {(byte)color} {message}");
         }
 
+        public async Task SpawnEffect(Effect effect)
+        {
+            await Session.SendPacket(Packets.GenerateEffect(effect));
+        }
+
+        public async Task AddLevel(byte level)
+        {
+            Character.Level += level;
+            await ChatSay($"Felicidades, has subido al nivel {Character.Level}.", ChatColor.Yellow);
+            await Session.SendPacket(Packets.GenerateLev());
+            await Session.SendPacket(Packets.GenerateEffect(Effect.LEVEL_UP));
+            await Session.SendPacket(Packets.GenerateEffect(Effect.LEVEL_UP_SHINY));
+            await UpdateCharacter();
+        }
+
+        public async Task SetLevel(byte level)
+        {
+            Character.Level = level;
+            await ChatSay($"Felicidades, has subido al nivel {Character.Level}.", ChatColor.Yellow);
+            await Session.SendPacket(Packets.GenerateLev());
+            await Session.SendPacket(Packets.GenerateEffect(Effect.LEVEL_UP));
+            await Session.SendPacket(Packets.GenerateEffect(Effect.LEVEL_UP_SHINY));
+            await UpdateCharacter();
+        }
+
+        public async Task AddJobLevel(byte level)
+        {
+            Character.JobLevel += level;
+            await ChatSay($"Felicidades, has subido al nivel de profesión {Character.JobLevel}.", ChatColor.Yellow);
+            await Session.SendPacket(Packets.GenerateLev());
+            await Session.SendPacket(Packets.GenerateEffect(Effect.LEVEL_UP));
+            await Session.SendPacket(Packets.GenerateEffect(Effect.LEVEL_UP_SHINY));
+            await UpdateCharacter();
+        }
+
+        public async Task SetJobLevel(byte level)
+        {
+            Character.JobLevel = level;
+            await ChatSay($"Felicidades, has subido al nivel de profesión {Character.JobLevel}.", ChatColor.Yellow);
+            await Session.SendPacket(Packets.GenerateLev());
+            await Session.SendPacket(Packets.GenerateEffect(Effect.LEVEL_UP));
+            await Session.SendPacket(Packets.GenerateEffect(Effect.LEVEL_UP_SHINY));
+            await UpdateCharacter();
+        }
+
         public async Task UpdateCharacter()
         {
             await AppDbContext.UpdateAsync(Character);
+        }
+
+        public async Task ChangeMap(short id, short x, short y)
+        {
+            Character.MapId = id;
+            Character.MapPosX = x;
+            Character.MapPosY = y;
+            CurrentMap = WorldManager.GetWorldMap(Character.MapId);
+            await Session.SendPacket(Session.Player.Packets.GeneratePlayerMapInfo());
+            await Session.SendPacket(Packets.GenerateMapInfo());
+            await UpdateCharacter();
+        }
+        
+        public async Task Save()
+        {
+            Character.MapId = CurrentMap.Id;
+            Character.MapPosX = MapPosX;
+            Character.MapPosY = MapPosY;
+            await AppDbContext.UpdateAsync(Character);
+            _timerSave = Observable.Interval(TimeSpan.FromMinutes(5)).Subscribe(async _ =>
+            {
+                await UpdateCharacter();
+                Log.Information($"Character {Character.Name} saved successfully.");
+            });
+        }
+
+        public async Task SaveCharacterOnDisconnect()
+        {
+            Character.MapId = CurrentMap.Id;
+            Character.MapPosX = MapPosX;
+            Character.MapPosY = MapPosY;
+            await AppDbContext.UpdateAsync(Character);
+            Log.Information($"Character {Character.Name} saved successfully.");
         }
     }
 }

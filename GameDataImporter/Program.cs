@@ -1,4 +1,5 @@
 ﻿using GameDataImporter.Importers;
+using GameDataImporter.Packet;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ namespace GameDataImporter
         {
             Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateLogger();
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            await PacketFileTxt.LoadPacket();
             await MapImporter.Import();
 
             Log.Information("Press any key to exit.");

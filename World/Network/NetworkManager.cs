@@ -40,6 +40,11 @@ namespace World.Network
             _packetHandler.Register("$transform", CommandHandler.Morph);
             _packetHandler.Register("$tp", CommandHandler.Teleport);
             _packetHandler.Register("$speed", CommandHandler.Speed);
+            _packetHandler.Register("$mlvl", CommandHandler.ModLevel);
+            _packetHandler.Register("$mjlvl", CommandHandler.ModJobLevel);
+            _packetHandler.Register("$pinfo", CommandHandler.PlayerInfo);
+            _packetHandler.Register("$getmapinfo", CommandHandler.GetMapInfo);
+            _packetHandler.Register("$getpos", CommandHandler.GetPosition);
         }
 
         public async Task StartAsync()
@@ -140,6 +145,7 @@ namespace World.Network
             finally
             {
                 Log.Information($"Client disconnected.");
+                await session.Player.SaveCharacterOnDisconnect();
                 await session.Disconnect();
             }
         }

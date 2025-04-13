@@ -10,7 +10,8 @@ namespace World.Network.Handlers
     {
         public static async Task HandleWalk(ClientSession session, string[] parts) // Walk
         {
-
+            session.Player.MapPosX = short.Parse(parts[2]);
+            session.Player.MapPosY = short.Parse(parts[3]);
         }
     }
 }

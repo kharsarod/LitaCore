@@ -1,4 +1,5 @@
-﻿using Enum.Main.OptionEnum;
+﻿using Enum.Main.EffectEnum;
+using Enum.Main.OptionEnum;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using World.Entities;
 using World.Network;
+using static System.Collections.Specialized.BitVector32;
 
 namespace World.Extensions
 {
@@ -19,14 +21,24 @@ namespace World.Extensions
 
         public string GenerateLev()
         {
-            var level = _session.Player.Level;
-            var exp = level <= 99 ? _session.Player.Exp : _session.Player.Exp / 100;
-            var jobLevel = _session.Player.JobLevel;
-            var jobExp = _session.Player.JobExp;
-            var heroLevel = _session.Player.HeroLevel;
+            var level = _session.Player.Character.Level;
+            var exp = level <= 99 ? _session.Player.Character.Exp : _session.Player.Exp / 100;
+            var jobLevel = _session.Player.Character.JobLevel;
+            var jobExp = _session.Player.Character.JobExp;
+            var heroLevel = _session.Player.Character.HeroLevel;
             var heroExp = heroLevel <= 99 ? _session.Player.HeroExp : _session.Player.HeroExp / 100;
 
             return $"lev {level} {exp} {jobLevel} {jobExp} 1000 1500 10 15 {heroExp} {heroLevel} 15000 0";
+        }
+
+        public string GenerateMapInfo()
+        {
+            return $"c_map 0 {_session.Player.CurrentMap.Id} 0";
+        }
+
+        public string GenerateEffect(Effect effect)
+        {
+            return $"eff 1 1 {(byte)effect}";
         }
 
         public string GenerateStat()
@@ -62,6 +74,11 @@ namespace World.Extensions
         {
             var speed = _session.Player.Speed;
             return $"cond 1 1 0 0 {speed}";
+        }
+
+        public string GeneratePlayerMapInfo()
+        {
+            return $"at 1 {_session.Player.Character.MapId} {_session.Player.Character.MapPosX} {_session.Player.Character.MapPosY} 0 0 {_session.Player.CurrentMap.Bgm} 2 -1";
         }
 
         public string GenerateRage()

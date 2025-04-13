@@ -1,4 +1,5 @@
 ﻿using Database.Player;
+using Database.World;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -6,6 +7,7 @@ public class AppDbContext : DbContext
 {
     public DbSet<Account> Accounts { get; set; }
     public DbSet<Character> Characters { get; set; }
+    public DbSet<Map> Maps { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -27,6 +29,7 @@ public class AppDbContext : DbContext
 
         modelBuilder.Entity<Account>().ToTable("accounts");
         modelBuilder.Entity<Character>().ToTable("characters");
+        modelBuilder.Entity<Map>().ToTable("maps");
     }
 
     public static async Task InsertAsync<TEntity>(TEntity entity) where TEntity : class
@@ -45,6 +48,22 @@ public class AppDbContext : DbContext
         }
     }
 
+    public static async Task<List<Map>> LoadAllMapsAsync()
+    {
+        try
+        {
+            using (var context = new AppDbContext())
+            {
+                return await context.Maps.ToListAsync();
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Error(e.Message);
+            return new List<Map>();
+        }
+    }
+
     public static async Task UpdateAsync<TEntity>(TEntity entity) where TEntity : class
     {
         try
@@ -53,6 +72,21 @@ public class AppDbContext : DbContext
             {
                 context.Set<TEntity>().Update(entity);
                 await context.SaveChangesAsync();
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Error(e.Message);
+        }
+    }
+
+    public static async Task LoadByIdAsync<TEntity>(int id) where TEntity : class
+    {
+        try
+        {
+            using (var context = new AppDbContext())
+            {
+                await context.Set<TEntity>().FindAsync(id);
             }
         }
         catch (Exception e)

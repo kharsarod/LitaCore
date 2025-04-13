@@ -18,7 +18,7 @@ namespace Database
             try
             {
                 using var context = new AppDbContext();
-               // await context.Database.EnsureCreatedAsync();
+                await context.Database.EnsureCreatedAsync();
                // await context.Database.MigrateAsync();
 
                 Log.Information("Database initialized.");

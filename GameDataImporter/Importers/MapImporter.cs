@@ -41,32 +41,35 @@ namespace GameDataImporter.Importers
                 }
             }
 
-            foreach (var line in PacketFileTxt.packets.Where(o => o[0] == "at"))
+            var mapFiles = new DirectoryInfo(Path.Combine(Environment.CurrentDirectory, "Parser", "Maps")).GetFiles();
+            await Task.WhenAll(mapFiles.Select(file => ProcessMapFileAsync(file, dicZts, dicIdLang, maps)));
+
+            try
             {
-                if (line.Length > 7 && !dicBgm.ContainsKey(int.Parse(line[2])))
+                foreach (var map in maps.Values)
                 {
-                    dicBgm[int.Parse(line[2])] = int.Parse(line[7]);
+                    await AppDbContext.InsertAsync(map);
                 }
             }
-
-            var mapFiles = new DirectoryInfo(Path.Combine(Environment.CurrentDirectory, "Parser", "Maps")).GetFiles();
-            await Task.WhenAll(mapFiles.Select(file => ProcessMapFileAsync(file, dicZts, dicIdLang, dicBgm, maps)));
+            catch (Exception e)
+            {
+                Log.Error(e, "Failed to insert maps");
+            }
 
             Log.Information($"Maps imported {maps.Count}, took {sw.ElapsedMilliseconds} ms.");
             sw.Stop();
         }
 
-        private static async Task ProcessMapFileAsync(FileInfo file, Dictionary<int, string> dictionaryZts, Dictionary<string, string> dictionaryIdLang, Dictionary<int, int> dictionaryMusic, ConcurrentDictionary<short, Map> maps)
+        private static async Task ProcessMapFileAsync(FileInfo file, Dictionary<int, string> dicZts, Dictionary<string, string> dicIdLang, ConcurrentDictionary<short, Map> maps)
         {
             var mapId = short.Parse(file.Name);
             var mapData = await File.ReadAllBytesAsync(file.FullName);
-            var name = dictionaryZts.ContainsKey(mapId) && dictionaryIdLang.TryGetValue(dictionaryZts[mapId], out var mapName) ? mapName : "";
-            var music = dictionaryMusic.TryGetValue(mapId, out var musicId) ? musicId : 0;
+            var name = dicZts.ContainsKey(mapId) && dicIdLang.TryGetValue(dicZts[mapId], out var mapName) ? mapName : "";
 
             var map = new Map
             {
                 Name = name,
-                Bgm = music,
+                Bgm = 1, // All maps have 1 bgm lolxd
                 Id = mapId,
                 Data = mapData,
                 IsShopAllowed = mapId == 147,
