@@ -64,6 +64,8 @@ namespace GameDataImporter.Importers
         {
             var mapId = short.Parse(file.Name);
             var mapData = await File.ReadAllBytesAsync(file.FullName);
+            var width = BitConverter.ToInt16(mapData, 0);
+            var height = BitConverter.ToInt16(mapData, 2);
             var name = dicZts.ContainsKey(mapId) && dicIdLang.TryGetValue(dicZts[mapId], out var mapName) ? mapName : "";
 
             var map = new Map
@@ -71,7 +73,9 @@ namespace GameDataImporter.Importers
                 Name = name,
                 Bgm = 1, // All maps have 1 bgm lolxd
                 Id = mapId,
-                Data = mapData,
+                MapGrid = mapData.Skip(4).ToArray(),
+                Width = width,
+                Height = height,
                 IsShopAllowed = mapId == 147,
             };
 

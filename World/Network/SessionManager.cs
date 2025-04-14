@@ -17,6 +17,11 @@ namespace World.Network
             return _sessions.ContainsKey(username);
         }
 
+        public static int GetClientId(ClientSession session)
+        {
+            return session.ClientId;
+        }
+
         public static void Register(string username, ClientSession session)
         {
             _sessions[username] = session;

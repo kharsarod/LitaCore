@@ -1,10 +1,14 @@
-﻿using Enum.Main.EffectEnum;
+﻿using Enum.Main.CharacterEnum;
+using Enum.Main.EffectEnum;
+using Enum.Main.EntityEnum;
 using Enum.Main.OptionEnum;
+using GameWorld;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using World.Entities;
 using World.Network;
 using static System.Collections.Specialized.BitVector32;
@@ -19,6 +23,26 @@ namespace World.Extensions
             _session = session;
         }
 
+        public string GenerateIn()
+        {
+            // in 1 {session.Player.Name} - 532 123 876 2 1 3 45 2 654.321.543.678.987.345.234.123
+            // 76 89 0 123 4 2 0 5 1 456 789 321.432.543.654.765.876.987.123 -1 FamiliaLocaxd 2 0 4 1 3 45 12 0|0|1  1 99 100 23"
+            
+            var name = _session.Player.Name;
+            var rank = _session.Player.Session.Account.Rank;
+            var charId = _session.Player.Character.Id;
+            var gender = _session.Player.Gender;
+            var hairStyle = _session.Player.HairStyle;
+            var hairColor = _session.Player.HairColor;
+            var classId = _session.Player.Class;
+            var level = _session.Player.Character.Level;
+            var posX = _session.Player.MapPosX;
+            var posY = _session.Player.MapPosY;
+
+
+            return $"in {(byte)Entity.Player} {name} - {charId} {posX} {posY} 1 {(rank > 0 ? 6 : 0)} {(byte)gender} {(byte)hairStyle} {(byte)hairColor} {(byte)classId} 654.321.543.678.987.345.234.123 100 100 0 0 0 0 0 0 0 {(_session.Player.UsingSpecialist ? _session.Player.Morph : 0)} 0 321.432.543.654.765.876.987.123 -1 FamiliaLocaxd 2 0 {(_session.Player.UsingSpecialist ? _session.Player.SpUpgrade : 0)} 1 {(_session.Player.UsingSpecialist ? (byte)_session.Player.SpWings : 0)} 45 12 0|0|1  1 99 100 23";
+        }
+
         public string GenerateLev()
         {
             var level = _session.Player.Character.Level;
@@ -29,6 +53,11 @@ namespace World.Extensions
             var heroExp = heroLevel <= 99 ? _session.Player.HeroExp : _session.Player.HeroExp / 100;
 
             return $"lev {level} {exp} {jobLevel} {jobExp} 1000 1500 10 15 {heroExp} {heroLevel} 15000 0";
+        }
+
+        public string GenerateMove(short walkPacketX, short walkPacketY)
+        {
+            return $"mv {(byte)Entity.Player} {_session.Player.Character.Id} {walkPacketX} {walkPacketY} {_session.Player.Speed}";
         }
 
         public string GenerateMapInfo()
@@ -78,7 +107,8 @@ namespace World.Extensions
 
         public string GeneratePlayerMapInfo()
         {
-            return $"at 1 {_session.Player.Character.MapId} {_session.Player.Character.MapPosX} {_session.Player.Character.MapPosY} 0 0 {_session.Player.CurrentMap.Bgm} 2 -1";
+            var instance = WorldManager.GetInstance(_session.Player.Character.MapId);
+            return $"at 1 {instance.Id} {_session.Player.Character.MapPosX} {_session.Player.Character.MapPosY} 0 0 {instance.Template.Bgm} 2 -1";
         }
 
         public string GenerateRage()

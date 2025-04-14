@@ -17,7 +17,7 @@ namespace Database.World
 
         public bool IsShopAllowed { get; set; }
 
-        public byte[] Data { get; set; }
+        public byte[] MapGrid { get; set; }
 
         public byte ExpRate { get; set; }
 
@@ -26,6 +26,10 @@ namespace Database.World
         public byte DropRate { get; set; }
 
         public bool IsPvpAllowed { get; set; }
+
+        public short Height { get; set; }
+
+        public short Width { get; set; }
 
     }
 }

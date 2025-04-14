@@ -15,12 +15,14 @@ namespace World.Network.Handlers
             {
                 session.Player.IsSitting = true;
                 await session.SendPacket("rest 1 1 1");
+                await session.Player.CurrentMap.Broadcast($"rest 1 {session.Player.Character.Id} 1");
                 return;
             }
             if (session.Player.IsSitting)
             {
                 session.Player.IsSitting = false;
                 await session.SendPacket("rest 1 1 0");
+                await session.Player.CurrentMap.Broadcast($"rest 1 {session.Player.Character.Id} 0");
             }
         }
     }

@@ -5,6 +5,7 @@ using Enum.Main.ChatEnum;
 using Enum.Main.EffectEnum;
 using Enum.Main.EntityEnum;
 using Enum.Main.OptionEnum;
+using Enum.Main.SpecialistEnum;
 using GameWorld;
 using Serilog;
 using System;
@@ -25,13 +26,20 @@ namespace World.Entities
         public short MapId { get; set; }
         public short X { get; set; }
         public short Y { get; set; }
+        public byte BeforeOrientation { get; set; }
         public byte Orientation { get; set; }
         public byte Scale { get; set; } = 100;
         public byte Speed { get; set; }
+        public int Morph { get; set; }
+        public byte SpUpgrade { get; set; }
+        public SpWings SpWings { get; set; }
+        public bool UsingSpecialist { get; set; }
         public PlayerPackets Packets => new PlayerPackets(Session);
         public Character Character { get; set; }
         public bool IsSitting { get; set; }
-        public WorldMap CurrentMap { get; set; }
+        public MapInstance CurrentMap { get; set; }
+        public IDisposable WalkDisposable;
+
         private IDisposable _timerSave;
 
         public Player(ClientSession session, Character character)
@@ -58,7 +66,6 @@ namespace World.Entities
             Reputation = character.Reputation;
             Gold = character.Gold;
             Compliments = character.Compliments;
-            MapId = character.MapId;
             MapPosX = character.MapPosX;
             MapPosY = character.MapPosY;
             Biography = character.Biography;
@@ -97,14 +104,6 @@ namespace World.Entities
             IsPetAutoRelive = character.IsPetAutoRelive;
             IsPartnerAutoRelive = character.IsPartnerAutoRelive;
             Character = character;
-        }
-
-        public string GenerateIn()
-        {
-            // in 1 {session.Player.Name} - 532 123 876 2 1 3 45 2 654.321.543.678.987.345.234.123
-            // 76 89 0 123 4 2 0 5 1 456 789 321.432.543.654.765.876.987.123 -1 FamiliaLocaxd 2 0 4 1 3 45 12 0|0|1  1 99 100 23"
-            return Protocol.FormatPacket("in", (byte)Entity.Player, Name, "-",  Id, MapPosX, MapPosY, Orientation, Session.Account.Rank > 1 ? 2 : Session.Account.Rank,
-                (byte)Gender, (byte)HairStyle, (byte)HairColor, 0, (byte)Class, "654.321.543.678.987.345.234.123", "76 89 0 123 4 2 0 5 1 456 789 321.432.543.654.765.876.987.123 -1 FamiliaLocaxd 2 0 4 1 3 45 12 0|0|1  1 99 100 23");
         }
 
         public async Task SetSpeed(byte speed)
@@ -175,17 +174,59 @@ namespace World.Entities
             await AppDbContext.UpdateAsync(Character);
         }
 
-        public async Task ChangeMap(short id, short x, short y)
+        public async Task ChangeMap(MapInstance map, short x, short y)
         {
-            Character.MapId = id;
-            Character.MapPosX = x;
-            Character.MapPosY = y;
-            CurrentMap = WorldManager.GetWorldMap(Character.MapId);
+            if (Session.Player.CurrentMap != null)
+            {
+                Session.Player.CurrentMap.RemovePlayer(this);
+            }
+
+            Session.Player.Character.MapId = map.Template.Id;
+            Session.Player.Character.MapPosX = x;
+            Session.Player.Character.MapPosY = y;
+
+            Session.Player.CurrentMap = map;
+            Session.Player.CurrentMap.AddPlayer(this);
+
             await Session.SendPacket(Session.Player.Packets.GeneratePlayerMapInfo());
             await Session.SendPacket(Packets.GenerateMapInfo());
+            await Session.Player.CurrentMap.Broadcast(Packets.GenerateIn(), Session);
+
+            foreach(var player in CurrentMap.Players.Where(x => Session.Player.Character.Id != x.Character.Id))
+            {
+                await Session.SendPacket(player.Packets.GenerateIn());
+            }
             await UpdateCharacter();
         }
-        
+
+        public async Task SendPacket(string packet) => await Session.SendPacket(packet);
+
+        public void SetOrientation(int pX, int pY, int nX, int nY)
+        {
+            BeforeOrientation = Orientation;
+
+            int dx = nX - pX;
+            int dy = nY - pY;
+
+            if (dx == 0 && dy > 0)
+                Orientation = 2;
+            else if (dx < 0 && dy == 0)
+                Orientation = 3;
+            else if (dx == 0 && dy < 0)
+                Orientation = 0;
+            else if (dx > 0 && dy == 0)
+                Orientation = 1;
+            else if (dx > 0 && dy > 0)
+                Orientation = 6;
+            else if (dx < 0 && dy > 0)
+                Orientation = 7;
+            else if (dx < 0 && dy < 0)
+                Orientation = 4;
+            else if (dx > 0 && dy < 0)
+                Orientation = 5;
+        }
+
+
         public async Task Save()
         {
             Character.MapId = CurrentMap.Id;

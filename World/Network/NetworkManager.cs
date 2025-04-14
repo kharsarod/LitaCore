@@ -3,6 +3,7 @@ using NosCryptLib.Encryption;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -52,7 +53,7 @@ namespace World.Network
             _settings = await _conf.ReadConfigAsync();
             _socket.Bind(new IPEndPoint(IPAddress.Parse("127.0.0.1"), _settings.Configuration.Port_CH1));
             _socket.Listen(100);
-            Console.WriteLine("Listening on port " + _settings.Configuration.Port_CH1);
+            Log.Logger.Information("Listening on port " + _settings.Configuration.Port_CH1);
 
             while (true)
             {
@@ -106,7 +107,7 @@ namespace World.Network
                             if (SessionManager.IsConnected(pck.Split(' ')[1]))
                             {
                                 await session.SendPacket("msg 0 This account already logged in. What are you trying to do?");
-                                await client.DisconnectAsync(false);
+                                client.Dispose();
                                 return;
                             }
                             await session.SetupAcccount(pck.Split(' ')[1]);
@@ -131,7 +132,7 @@ namespace World.Network
                         }
                         catch (Exception e)
                         {
-                            Log.Error(e.Message);
+                            Log.Error(e, "Exception");
                         }
                         
                     }
@@ -140,12 +141,15 @@ namespace World.Network
             }
             catch (Exception e)
             {
-                Log.Error(e.Message);
+                Log.Error(e, "Exception");
             }
             finally
             {
                 Log.Information($"Client disconnected.");
-                await session.Player.SaveCharacterOnDisconnect();
+                if (session.Player != null)
+                {
+                    await session.Player.SaveCharacterOnDisconnect();
+                }
                 await session.Disconnect();
             }
         }

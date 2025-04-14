@@ -10,6 +10,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using World.Entities;
+using World.GameWorld;
 
 namespace World.Network
 {
@@ -27,6 +28,8 @@ namespace World.Network
         public int ClientId { get; private set; }
         
         public int SessionId { get; set; }
+
+        public int AuthenticationKeyPacket { get; set; }
 
         public ClientSession(Socket socket, PacketHandler handler)
         {
@@ -56,16 +59,62 @@ namespace World.Network
 
         public async Task Disconnect()
         {
-            if ( Account != null && !string.IsNullOrEmpty(Account.Username))
+            try
             {
-                SessionManager.Unregister(Account.Username);
+                if (_socket != null)
+                {
+                    try
+                    {
+                        if (_socket.Connected)
+                        {
+                            _socket.Shutdown(SocketShutdown.Both);
+                        }
+                    }
+                    catch (SocketException se)
+                    {
+                        Log.Warning(se, "Socket already closed or failed to shutdown cleanly.");
+                    }
+
+                    _socket.Close();
+                    _socket.Dispose();
+                }
+
+                if (Account != null && !string.IsNullOrEmpty(Account.Username))
+                {
+                    SessionManager.Unregister(Account.Username);
+
+                    Log.Information($"Disconnected session for user {Account.Username}.");
+                }
+                else
+                {
+                    Log.Information("Disconnected session with no linked account.");
+                }
             }
-            _socket.Close();
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error while disconnecting.");
+            }
         }
+
 
         public async Task SendPacket(string packet)
         {
-            await _socket.SendAsync(_cryptography.Encrypt(packet), SocketFlags.None);
+            try
+            {
+                if (_socket?.Connected == true)
+                {
+                    await _socket.SendAsync(_cryptography.Encrypt(packet), SocketFlags.None);
+                }
+                else
+                {
+                    Log.Warning("Socket not connected.");
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Error($"Failed to send packet to session {(Account?.Username ?? "Unknown")}: ", e);
+                await Disconnect();
+            }
         }
 
         public async Task ReceivePacket(string packet)
@@ -84,7 +133,7 @@ namespace World.Network
             }
             catch (Exception e)
             {
-                Log.Error($"Error in simulated ReceivePacket: {e.Message}");
+                Log.Error($"Error in simulated ReceivePacket: ", e);
             }
         }
     }

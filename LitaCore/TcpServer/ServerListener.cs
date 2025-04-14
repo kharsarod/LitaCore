@@ -16,6 +16,7 @@ using LoginServer.Types;
 using System.Text.RegularExpressions;
 using Database.Data.Repositories;
 using NosTalePacketsLib.Packets.Client;
+using Database.TokenDb;
 
 
 namespace LoginServer.TcpServer
@@ -87,7 +88,6 @@ namespace LoginServer.TcpServer
                     string[] splitter = data.Split(' ');
 
                     var account = await accountRepository.LoadByName(splitter[2]);
-
                     var regex = Regex.Match(splitter[6], @"^\d+");
                     session.SessionId = int.Parse(splitter[1]);
                     session.Language = (LanguageType)byte.Parse(regex.Value);

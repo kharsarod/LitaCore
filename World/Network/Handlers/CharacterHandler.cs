@@ -153,13 +153,13 @@ namespace World.Network.Handlers
             {
                 var character = await AppDbContext.LoadCharacterBySlot(byte.Parse(parts[2]));
                 session.Player = new Player(session, character);
-                var map = WorldManager.GetWorldMap(character.MapId);
+                var map = WorldManager.GetInstance(character.MapId);
                 session.Player.CurrentMap = map;
                 await session.SendPacket("OK");
             }
             catch (Exception e)
             {
-                Log.Warning(e.Message);
+                Log.Warning("ERROR: " + e.Message);
             }
         }
     }

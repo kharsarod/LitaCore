@@ -1,0 +1,92 @@
+﻿START TRANSACTION;
+
+CREATE TABLE `items` (
+    `id` smallint NOT NULL AUTO_INCREMENT,
+    `defaultupgrade` tinyint unsigned NOT NULL,
+    `cellonlevel` tinyint unsigned NOT NULL,
+    `requiredclass` tinyint unsigned NOT NULL,
+    `closedefence` smallint NOT NULL,
+    `color` tinyint unsigned NOT NULL,
+    `concentrate` smallint NOT NULL,
+    `criticalluckrate` tinyint unsigned NOT NULL,
+    `criticalrate` smallint NOT NULL,
+    `damagemaximum` smallint NOT NULL,
+    `damageminimum` smallint NOT NULL,
+    `darkelement` tinyint unsigned NOT NULL,
+    `darkresistance` smallint NOT NULL,
+    `defencedodge` smallint NOT NULL,
+    `distancedefence` smallint NOT NULL,
+    `distancedefencedodge` smallint NOT NULL,
+    `effect` smallint NOT NULL,
+    `effectdata` int NOT NULL,
+    `element` tinyint unsigned NOT NULL,
+    `elementrate` smallint NOT NULL,
+    `equipmentslot` int NOT NULL,
+    `fireelement` tinyint unsigned NOT NULL,
+    `fireresistance` smallint NOT NULL,
+    `height` tinyint unsigned NOT NULL,
+    `hitrate` smallint NOT NULL,
+    `hp` smallint NOT NULL,
+    `hpregeneration` smallint NOT NULL,
+    `isblocked` tinyint(1) NOT NULL,
+    `iscolored` tinyint(1) NOT NULL,
+    `isconsumable` tinyint(1) NOT NULL,
+    `isdroppable` tinyint(1) NOT NULL,
+    `isheroic` tinyint(1) NOT NULL,
+    `isholder` tinyint(1) NOT NULL,
+    `isminilandobject` tinyint(1) NOT NULL,
+    `issoldable` tinyint(1) NOT NULL,
+    `istradable` tinyint(1) NOT NULL,
+    `itemsubtype` tinyint unsigned NOT NULL,
+    `itemtype` int NOT NULL,
+    `itemvalidtime` bigint NOT NULL,
+    `leveljobminimum` tinyint unsigned NOT NULL,
+    `levelminimum` tinyint unsigned NOT NULL,
+    `lightelement` tinyint unsigned NOT NULL,
+    `lightresistance` smallint NOT NULL,
+    `magicdefence` smallint NOT NULL,
+    `maxcellon` smallint NOT NULL,
+    `maxcellonlvl` smallint NOT NULL,
+    `maxelementrate` smallint NOT NULL,
+    `maximumammo` tinyint unsigned NOT NULL,
+    `minilandobjectpoint` int NOT NULL,
+    `morehp` smallint NOT NULL,
+    `moremp` smallint NOT NULL,
+    `morph` smallint NOT NULL,
+    `mp` smallint NOT NULL,
+    `mpregeneration` smallint NOT NULL,
+    `price` bigint NOT NULL,
+    `selltonpcprice` bigint NOT NULL,
+    `pvpdefence` smallint NOT NULL,
+    `pvpstrength` tinyint unsigned NOT NULL,
+    `reduceoposantresistance` smallint NOT NULL,
+    `reputationminimum` tinyint unsigned NOT NULL,
+    `reputprice` bigint NOT NULL,
+    `secondaryelement` tinyint unsigned NOT NULL,
+    `sex` tinyint unsigned NOT NULL,
+    `speed` tinyint unsigned NOT NULL,
+    `sptype` tinyint unsigned NOT NULL,
+    `type` int NOT NULL,
+    `waitdelay` smallint NOT NULL,
+    `waterelement` tinyint unsigned NOT NULL,
+    `waterresistance` smallint NOT NULL,
+    `width` tinyint unsigned NOT NULL,
+    CONSTRAINT `PK_items` PRIMARY KEY (`id`)
+) CHARACTER SET=utf8mb4;
+
+CREATE TABLE `items_translations` (
+    `id` int NOT NULL AUTO_INCREMENT,
+    `language` int NOT NULL,
+    `name` longtext CHARACTER SET utf8mb4 NOT NULL,
+    `itemid` smallint NOT NULL,
+    CONSTRAINT `PK_items_translations` PRIMARY KEY (`id`),
+    CONSTRAINT `FK_items_translations_items_itemid` FOREIGN KEY (`itemid`) REFERENCES `items` (`id`) ON DELETE CASCADE
+) CHARACTER SET=utf8mb4;
+
+CREATE INDEX `IX_items_translations_itemid` ON `items_translations` (`itemid`);
+
+INSERT INTO `__EFMigrationsHistory` (`MigrationId`, `ProductVersion`)
+VALUES ('20250414160523_litacore06', '8.0.13');
+
+COMMIT;
+

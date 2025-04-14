@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Database.Migrations
 {
     /// <inheritdoc />
-    public partial class litacore03_new_maps : Migration
+    public partial class litacore03_maps : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -21,11 +21,13 @@ namespace Database.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     bgm = table.Column<int>(type: "int", nullable: false),
                     isshopallowed = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    data = table.Column<byte[]>(type: "longblob", nullable: false),
+                    mapgrid = table.Column<byte[]>(type: "longblob", nullable: false),
                     exprate = table.Column<byte>(type: "tinyint unsigned", nullable: false),
                     goldrate = table.Column<byte>(type: "tinyint unsigned", nullable: false),
                     droprate = table.Column<byte>(type: "tinyint unsigned", nullable: false),
-                    ispvpallowed = table.Column<bool>(type: "tinyint(1)", nullable: false)
+                    ispvpallowed = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    height = table.Column<short>(type: "smallint", nullable: false),
+                    width = table.Column<short>(type: "smallint", nullable: false)
                 },
                 constraints: table =>
                 {
