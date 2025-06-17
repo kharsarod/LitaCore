@@ -1,0 +1,16 @@
+DROP USER IF EXISTS 'litacore'@'%';
+CREATE USER 'litacore'@'%' IDENTIFIED BY 'litacore' WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0;
+
+GRANT ALL PRIVILEGES ON * . * TO 'litacore'@'%' WITH GRANT OPTION;
+
+CREATE DATABASE `litacore_world` DEFAULT CHARACTER SET UTF8MB4 COLLATE utf8mb4_unicode_ci;
+
+CREATE DATABASE `litacore_characters` DEFAULT CHARACTER SET UTF8MB4 COLLATE utf8mb4_unicode_ci;
+
+CREATE DATABASE `litacore_auth` DEFAULT CHARACTER SET UTF8MB4 COLLATE utf8mb4_unicode_ci;
+
+GRANT ALL PRIVILEGES ON `litacore_world` . * TO 'litacore'@'%' WITH GRANT OPTION;
+
+GRANT ALL PRIVILEGES ON `litacore_characters` . * TO 'litacore'@'%' WITH GRANT OPTION;
+
+GRANT ALL PRIVILEGES ON `litacore_auth` . * TO 'litacore'@'%' WITH GRANT OPTION;

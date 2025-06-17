@@ -1,0 +1,5 @@
+Script-Migration -From previousMigration -To recentMigrationCreated -Output "sql/updates/update01.sql" Este es para actualizar una tabla.
+
+Get-Migrations para ver migraciones
+
+Script-Migration MigraciónAnterior NuevaMigración -Output sql/depende/nombre.sql

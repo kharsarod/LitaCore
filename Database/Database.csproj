@@ -1,0 +1,79 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Data\**" />
+    <EmbeddedResource Remove="Data\**" />
+    <None Remove="Data\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Context\AppDbContext.cs" />
+    <Compile Remove="Helper\DbHelper.cs" />
+    <Compile Remove="Migrations\20250412021010_litacore01.cs" />
+    <Compile Remove="Migrations\20250412021010_litacore01.Designer.cs" />
+    <Compile Remove="Migrations\20250412192140_litacore02.cs" />
+    <Compile Remove="Migrations\20250412192140_litacore02.Designer.cs" />
+    <Compile Remove="Migrations\20250413155938_litacore03_maps.cs" />
+    <Compile Remove="Migrations\20250413155938_litacore03_maps.Designer.cs" />
+    <Compile Remove="Migrations\20250414041100_litacore04.cs" />
+    <Compile Remove="Migrations\20250414041100_litacore04.Designer.cs" />
+    <Compile Remove="Migrations\20250414042822_litacore05.cs" />
+    <Compile Remove="Migrations\20250414042822_litacore05.Designer.cs" />
+    <Compile Remove="Migrations\20250416031825_litacore06_items_bcards.cs" />
+    <Compile Remove="Migrations\20250416031825_litacore06_items_bcards.Designer.cs" />
+    <Compile Remove="Migrations\20250416040242_litacore07_account_ip_lastlogout.cs" />
+    <Compile Remove="Migrations\20250416040242_litacore07_account_ip_lastlogout.Designer.cs" />
+    <Compile Remove="Migrations\20250416053227_litacore08_characteritems.cs" />
+    <Compile Remove="Migrations\20250416053227_litacore08_characteritems.Designer.cs" />
+    <Compile Remove="Migrations\20250416193951_litacore09_characteritems_invtype.cs" />
+    <Compile Remove="Migrations\20250416193951_litacore09_characteritems_invtype.Designer.cs" />
+    <Compile Remove="Migrations\20250417220554_litacore10_login_sessions.cs" />
+    <Compile Remove="Migrations\20250417220554_litacore10_login_sessions.Designer.cs" />
+    <Compile Remove="Migrations\20250418021012_litacore10.1.cs" />
+    <Compile Remove="Migrations\20250418021012_litacore10.1.Designer.cs" />
+    <Compile Remove="Migrations\20250419003539_litacore11_channels.cs" />
+    <Compile Remove="Migrations\20250419003539_litacore11_channels.Designer.cs" />
+    <Compile Remove="Migrations\20250419023307_litacore11.1_channels.cs" />
+    <Compile Remove="Migrations\20250419023307_litacore11.1_channels.Designer.cs" />
+    <Compile Remove="Migrations\20250421024833_litacore12.cs" />
+    <Compile Remove="Migrations\20250421024833_litacore12.Designer.cs" />
+    <Compile Remove="Migrations\20250423055515_litacore12.1.cs" />
+    <Compile Remove="Migrations\20250423055515_litacore12.1.Designer.cs" />
+    <Compile Remove="Migrations\20250503050227_litacore12.2.cs" />
+    <Compile Remove="Migrations\20250503050227_litacore12.2.Designer.cs" />
+    <Compile Remove="Migrations\20250503193648_litacore12.3.cs" />
+    <Compile Remove="Migrations\20250503193648_litacore12.3.Designer.cs" />
+    <Compile Remove="Migrations\20250505003950_litacore12.4.cs" />
+    <Compile Remove="Migrations\20250505003950_litacore12.4.Designer.cs" />
+    <Compile Remove="Migrations\AppDbContextModelSnapshot.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="14.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.4" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.4" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.3" />
+    <PackageReference Include="Serilog" Version="4.2.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Enum\Enum.csproj" />
+    <ProjectReference Include="..\NosCryptLib\NosCryptLib.csproj" />
+  </ItemGroup>
+
+</Project>

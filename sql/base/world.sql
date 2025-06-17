@@ -1,0 +1,3 @@
+CREATE DATABASE world;
+GRANT ALL PRIVILEGES ON world.* TO 'litacore'@'%' IDENTIFIED BY 'litacore';
+FLUSH PRIVILEGES;
